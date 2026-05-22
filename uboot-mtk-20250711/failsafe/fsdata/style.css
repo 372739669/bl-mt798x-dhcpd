@@ -1875,6 +1875,17 @@ body[data-page="404"] #m {
     margin: 0 auto;
 }
 
+/*
+ * On success the spinner is set to display:none via inline style and the
+ * status <p> stays empty — without this, the wrapper still reserves 56px of
+ * blank space under the success message. Hide when the spinner is hidden AND
+ * no other non-empty direct child remains. fail.html keeps its non-empty
+ * <p>s so the selector misses it and the message stays visible.
+ */
+.status-feedback:has(> #l[style*="display: none"]):not(:has(> :not(#l):not(:empty))) {
+    display: none;
+}
+
 @keyframes statusSpin {
     to { transform: rotate(360deg); }
 }
