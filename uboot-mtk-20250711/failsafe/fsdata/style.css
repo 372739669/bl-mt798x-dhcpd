@@ -2043,3 +2043,174 @@ body[data-page="settings"] .upload-hero {
         height: 40px;
     }
 }
+
+/* ── Sidebar help icon ─────────────────────────────────────────── */
+.sidebar-brand .help-btn {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: color var(--anim-fast) var(--ease-out),
+                border-color var(--anim-fast) var(--ease-out),
+                background-color var(--anim-fast) var(--ease-out);
+    flex-shrink: 0;
+}
+
+.sidebar-brand .help-btn:hover,
+.sidebar-brand .help-btn:focus-visible {
+    color: var(--primary);
+    border-color: var(--primary);
+    background: rgba(var(--primary-rgb), 0.10);
+    outline: none;
+}
+
+.sidebar-brand .help-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* ── About / Help modal ────────────────────────────────────────── */
+.help-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.48);
+    backdrop-filter: saturate(160%) blur(6px);
+    -webkit-backdrop-filter: saturate(160%) blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: var(--sp-lg);
+}
+
+.help-modal-backdrop.is-open {
+    display: flex;
+    animation: help-backdrop-in var(--anim) var(--ease-out);
+}
+
+@keyframes help-backdrop-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.help-modal {
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    max-width: 480px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: var(--sp-lg) var(--sp-lg) var(--sp-md);
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    font-family: var(--font-sans);
+    animation: help-modal-in var(--anim) var(--ease-spring);
+}
+
+@keyframes help-modal-in {
+    from { opacity: 0; transform: translateY(12px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.help-modal-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    width: 30px;
+    height: 30px;
+    line-height: 1;
+    font-size: 22px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: background-color var(--anim-fast) var(--ease-out),
+                color var(--anim-fast) var(--ease-out);
+}
+
+.help-modal-close:hover,
+.help-modal-close:focus-visible {
+    background: rgba(var(--primary-rgb), 0.10);
+    color: var(--text);
+    outline: none;
+}
+
+.help-modal-header {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-md);
+    margin-bottom: var(--sp-md);
+    padding-right: 36px;
+}
+
+.help-modal-logo {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius);
+    flex-shrink: 0;
+    box-shadow: var(--shadow-sm);
+}
+
+.help-modal-title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--text);
+}
+
+.help-modal-subtitle {
+    margin: 2px 0 0;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+.help-modal-body {
+    font-size: 0.92rem;
+    line-height: 1.55;
+}
+
+.help-modal-intro {
+    margin: 0 0 var(--sp-md);
+    color: var(--text);
+}
+
+.help-modal-info {
+    margin: 0;
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    column-gap: var(--sp-md);
+    row-gap: 6px;
+}
+
+.help-modal-info dt {
+    font-weight: 700;
+    color: var(--muted);
+}
+
+.help-modal-info dd {
+    margin: 0;
+    word-break: break-all;
+}
+
+.help-modal-info a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.help-modal-info a:hover,
+.help-modal-info a:focus-visible {
+    text-decoration: underline;
+    outline: none;
+}

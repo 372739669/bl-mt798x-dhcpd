@@ -283,7 +283,13 @@ const I18N = {
         "fail.msg.strong": "Something went wrong during update",
         "fail.msg.rest": "Probably you have chosen wrong file. Please, try again or contact with the author of this modification. You can also get more information during update in U-Boot console.",
         "404.title": "PAGE NOT FOUND",
-        "404.msg": "The page you were looking for doesn't exist!"
+        "404.msg": "The page you were looking for doesn't exist!",
+        "common.close": "Close",
+        "help.tooltip": "About & Help",
+        "help.title": "About & Help",
+        "help.intro": "A modernized U-Boot failsafe Web UI for MediaTek MT798x devices. Built-in DHCP server, Telnet console, customizable themes and bilingual (EN/zh-SC) interface.",
+        "help.author": "Author",
+        "help.project": "Project"
     },
     "zh-cn": {
         "app.name": "恢复模式 WEBUI",
@@ -559,6 +565,12 @@ const I18N = {
         "fail.msg.strong": "更新过程中出现错误",
         "fail.msg.rest": "可能选择了错误的文件。请重试或联系此修改的作者。你也可以在 U-Boot 控制台查看更多刷写过程信息。",
         "404.title": "页面不存在",
-        "404.msg": "你访问的页面不存在！"
+        "404.msg": "你访问的页面不存在！",
+        "common.close": "关闭",
+        "help.tooltip": "关于与帮助",
+        "help.title": "关于与帮助",
+        "help.intro": "面向 MediaTek MT798x 设备的现代化 U-Boot 失效保护 Web 界面。内置 DHCP 服务器、Telnet 控制台，支持自定义主题与中英双语切换。",
+        "help.author": "作者",
+        "help.project": "项目"
     }
 };

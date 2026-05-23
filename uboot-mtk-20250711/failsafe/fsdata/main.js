@@ -530,6 +530,22 @@ function ensureSidebar() {
     brandTitle.setAttribute("data-i18n", "app.name");
     brandTitle.textContent = t("app.name");
     brandContainer.appendChild(brandTitle);
+
+    const helpButton = document.createElement("button");
+    helpButton.type = "button";
+    helpButton.className = "help-btn";
+    helpButton.title = t("help.tooltip", "About & Help");
+    helpButton.setAttribute("data-i18n-attr", "title:help.tooltip");
+    helpButton.setAttribute("aria-label", t("help.tooltip", "About & Help"));
+    helpButton.innerHTML =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+        '<circle cx="12" cy="12" r="10"></circle>' +
+        '<path d="M9.5 9a2.5 2.5 0 1 1 4.5 1.5c-.6.5-1.5 1-1.5 2"></path>' +
+        '<line x1="12" y1="17" x2="12.01" y2="17"></line>' +
+        '</svg>';
+    helpButton.addEventListener("click", openHelpModal);
+    brandContainer.appendChild(helpButton);
+
     sidebar.appendChild(brandContainer);
 
     // Controls (language, theme, accent)
@@ -644,6 +660,125 @@ function ensureSidebar() {
     updateSimgNavVisibility();
     updateSettingsNavVisibility();
     attachSidebarScrollPersistence(navContainer);
+}
+
+function ensureHelpModal() {
+    let backdrop = document.getElementById("help_modal_backdrop");
+    if (backdrop) return backdrop;
+
+    backdrop = document.createElement("div");
+    backdrop.id = "help_modal_backdrop";
+    backdrop.className = "help-modal-backdrop";
+
+    const modal = document.createElement("div");
+    modal.className = "help-modal";
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+    modal.setAttribute("aria-labelledby", "help_modal_title");
+
+    const closeButton = document.createElement("button");
+    closeButton.type = "button";
+    closeButton.className = "help-modal-close";
+    closeButton.setAttribute("data-i18n-attr", "aria-label:common.close");
+    closeButton.setAttribute("aria-label", t("common.close", "Close"));
+    closeButton.innerHTML = "&times;";
+    closeButton.addEventListener("click", closeHelpModal);
+    modal.appendChild(closeButton);
+
+    const header = document.createElement("div");
+    header.className = "help-modal-header";
+
+    const logo = document.createElement("img");
+    logo.className = "help-modal-logo";
+    logo.src = "/favicon.svg";
+    logo.alt = "";
+    header.appendChild(logo);
+
+    const titles = document.createElement("div");
+    const title = document.createElement("h2");
+    title.id = "help_modal_title";
+    title.className = "help-modal-title";
+    title.setAttribute("data-i18n", "help.title");
+    title.textContent = t("help.title", "About & Help");
+    titles.appendChild(title);
+
+    const subtitle = document.createElement("p");
+    subtitle.className = "help-modal-subtitle";
+    subtitle.setAttribute("data-i18n", "app.name");
+    subtitle.textContent = t("app.name");
+    titles.appendChild(subtitle);
+
+    header.appendChild(titles);
+    modal.appendChild(header);
+
+    const body = document.createElement("div");
+    body.className = "help-modal-body";
+
+    const intro = document.createElement("p");
+    intro.className = "help-modal-intro";
+    intro.setAttribute("data-i18n", "help.intro");
+    intro.textContent = t("help.intro");
+    body.appendChild(intro);
+
+    const info = document.createElement("dl");
+    info.className = "help-modal-info";
+
+    const authorDt = document.createElement("dt");
+    authorDt.setAttribute("data-i18n", "help.author");
+    authorDt.textContent = t("help.author", "Author");
+    info.appendChild(authorDt);
+
+    const authorDd = document.createElement("dd");
+    const authorLink = document.createElement("a");
+    authorLink.href = GITHUB_USER_URL;
+    authorLink.target = "_blank";
+    authorLink.rel = "noopener";
+    authorLink.textContent = AUTHOR_DISPLAY;
+    authorDd.appendChild(authorLink);
+    info.appendChild(authorDd);
+
+    const projectDt = document.createElement("dt");
+    projectDt.setAttribute("data-i18n", "help.project");
+    projectDt.textContent = t("help.project", "Project");
+    info.appendChild(projectDt);
+
+    const projectDd = document.createElement("dd");
+    const projectLink = document.createElement("a");
+    projectLink.href = PROJECT_REPO_URL;
+    projectLink.target = "_blank";
+    projectLink.rel = "noopener";
+    projectLink.textContent = "Yuzhii0718/bl-mt798x-dhcpd";
+    projectDd.appendChild(projectLink);
+    info.appendChild(projectDd);
+
+    body.appendChild(info);
+    modal.appendChild(body);
+
+    backdrop.appendChild(modal);
+
+    backdrop.addEventListener("click", (event) => {
+        if (event.target === backdrop) closeHelpModal();
+    });
+
+    document.body.appendChild(backdrop);
+    return backdrop;
+}
+
+function handleHelpModalKey(event) {
+    if (event.key === "Escape") closeHelpModal();
+}
+
+function openHelpModal() {
+    const backdrop = ensureHelpModal();
+    applyI18n(backdrop);
+    backdrop.classList.add("is-open");
+    document.addEventListener("keydown", handleHelpModalKey);
+}
+
+function closeHelpModal() {
+    const backdrop = document.getElementById("help_modal_backdrop");
+    if (backdrop) backdrop.classList.remove("is-open");
+    document.removeEventListener("keydown", handleHelpModalKey);
 }
 
 const SIDEBAR_SCROLL_KEY = "failsafe_sidebar_scroll";
