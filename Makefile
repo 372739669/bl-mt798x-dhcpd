@@ -126,7 +126,11 @@ ifeq ($(origin SHOW), undefined)
   SHOW := $(if $(filter y,$(call config_bool,CONFIG_SHOW,n)),1,0)
 endif
 ifeq ($(origin DRAW), undefined)
-  DRAW := $(if $(strip $(CONFIG_DRAW_MODE)),$(call strip_quotes,$(CONFIG_DRAW_MODE)),0)
+  ifeq ($(call config_bool,CONFIG_GPT_DRAW,n),y)
+    DRAW := $(if $(call config_bool,CONFIG_GPT_DRAW_NOTITLE,n),notitle,1)
+  else
+    DRAW := 0
+  endif
 endif
 ifeq ($(origin SDMMC), undefined)
   SDMMC := $(if $(filter y,$(call config_bool,CONFIG_SDMMC,n)),1,0)
@@ -245,7 +249,9 @@ defconfig:
 		$(MAKE) --no-print-directory gen-board-kconfig; \
 	fi; \
 	ln -sf "$(CURDIR)/boards.kconfig" "$(MENUCONFIG_UBOOT_DIR)/boards.kconfig"; \
+	old_hash=""; \
 	if [ -f "$(CURDIR)/$(CONFIG_FILE)" ]; then \
+		old_hash=$$(md5sum "$(CURDIR)/$(CONFIG_FILE)" | awk '{print $$1}'); \
 		echo "Filling in missing defaults from existing $(CONFIG_FILE)..."; \
 		KBUILD_KCONFIG="$(CURDIR)/Kconfig" KCONFIG_CONFIG="$(CURDIR)/$(CONFIG_FILE)" \
 			"$(MENUCONFIG_UBOOT_DIR)/scripts/kconfig/conf" --olddefconfig "$(CURDIR)/Kconfig"; \
@@ -254,7 +260,13 @@ defconfig:
 		KBUILD_KCONFIG="$(CURDIR)/Kconfig" KCONFIG_CONFIG="$(CURDIR)/$(CONFIG_FILE)" \
 			"$(MENUCONFIG_UBOOT_DIR)/scripts/kconfig/conf" --alldefconfig "$(CURDIR)/Kconfig"; \
 	fi; \
-	rm -f "$(MENUCONFIG_UBOOT_DIR)/boards.kconfig"
+	rm -f "$(MENUCONFIG_UBOOT_DIR)/boards.kconfig"; \
+	new_hash=$$(md5sum "$(CURDIR)/$(CONFIG_FILE)" | awk '{print $$1}'); \
+	if [ "$$old_hash" = "$$new_hash" ]; then \
+		echo "$(CONFIG_FILE) unchanged."; \
+	else \
+		echo "$(CONFIG_FILE) updated."; \
+	fi
 
 all:
 	@set -euo pipefail; \

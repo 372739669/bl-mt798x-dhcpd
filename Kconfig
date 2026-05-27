@@ -124,11 +124,14 @@ config SHOW
 	bool "Show GPT layout"
 	default n
 
-config DRAW_MODE
-	string "GPT draw mode"
-	default "0"
-	help
-	  Use 0 for normal output, 1 to draw a diagram, or notitle to hide the title.
+config GPT_DRAW
+	bool "Draw GPT partition diagram"
+	default n
+
+config GPT_DRAW_NOTITLE
+	bool "Hide title in GPT diagram"
+	default n
+	depends on GPT_DRAW
 
 config SDMMC
 	bool "Enable SDMMC GPT mode"
