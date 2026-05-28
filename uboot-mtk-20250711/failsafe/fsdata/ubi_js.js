@@ -90,6 +90,7 @@
             html += '<td>' + t("ubi.type." + vol.type) + '</td>';
             html += '<td class="' + statusClass + '">' + statusText + '</td>';
             html += '<td>';
+            html += '<button class="button button-sm" onclick="ubiBackupVol(\'' + escapeHtml(vol.name) + '\')">' + t("ubi.btn.backup") + '</button> ';
             html += '<button class="button button-sm" onclick="ubiRenameVol(\'' + escapeHtml(vol.name) + '\')">' + t("ubi.btn.rename") + '</button> ';
             html += '<button class="button button-danger button-sm" onclick="ubiRemoveVol(\'' + escapeHtml(vol.name) + '\')">' + t("ubi.btn.remove") + '</button>';
             html += '</td>';
@@ -334,9 +335,88 @@
         });
     }
 
+    function setBackupStatus(msg) {
+        var el = document.getElementById("ubi_backup_status");
+        if (!el) return;
+        el.style.display = msg ? "block" : "none";
+        el.textContent = msg || "";
+    }
+
+    function setBackupProgress(percent) {
+        var el = document.getElementById("ubi_backup_bar");
+        if (!el) return;
+        var p = Math.max(0, Math.min(100, parseInt(percent || 0)));
+        el.style.display = "block";
+        el.style.setProperty("--percent", p);
+    }
+
+    async function backupVolume(name) {
+        setBackupProgress(0);
+        setBackupStatus(t("backup.status.starting"));
+        try {
+            var formData = new FormData();
+            formData.append("name", name);
+            var response = await fetch("/ubi/backup", { method: "POST", body: formData });
+            if (!response.ok) {
+                setBackupStatus(t("backup.error.http") + " " + response.status);
+                return;
+            }
+            var contentLength = response.headers.get("Content-Length");
+            var expectedLength = contentLength ? parseInt(contentLength, 10) : 0;
+            var downloadName = parseFilenameFromDisposition(response.headers.get("Content-Disposition"));
+            downloadName || (downloadName = "ubi_" + name + ".bin");
+            await ensureSysInfoLoaded();
+            downloadName = makeBackupDownloadName(downloadName);
+            var downloadedBytes = 0;
+
+            if (window.showSaveFilePicker) {
+                var saveHandle = await window.showSaveFilePicker({
+                    suggestedName: downloadName,
+                    types: [{ description: "Binary", accept: { "application/octet-stream": [".bin"] } }]
+                });
+                var writableStream = await saveHandle.createWritable();
+                var reader = response.body.getReader();
+                while (true) {
+                    var chunk = await reader.read();
+                    if (chunk.done) break;
+                    await writableStream.write(chunk.value);
+                    downloadedBytes += chunk.value.length;
+                    expectedLength ? setBackupProgress(downloadedBytes / expectedLength * 100) : setBackupProgress(0);
+                    setBackupStatus(t("backup.status.downloading") + " " + bytesToHuman(downloadedBytes) + (expectedLength ? " / " + bytesToHuman(expectedLength) : ""));
+                }
+                await writableStream.close();
+            } else {
+                var bufferedChunks = [];
+                var reader = response.body.getReader();
+                while (true) {
+                    var chunk = await reader.read();
+                    if (chunk.done) break;
+                    bufferedChunks.push(chunk.value);
+                    downloadedBytes += chunk.value.length;
+                    expectedLength ? setBackupProgress(downloadedBytes / expectedLength * 100) : setBackupProgress(0);
+                    setBackupStatus(t("backup.status.downloading") + " " + bytesToHuman(downloadedBytes) + (expectedLength ? " / " + bytesToHuman(expectedLength) : ""));
+                }
+                setBackupProgress(100);
+                setBackupStatus(t("backup.status.preparing"));
+                var backupBlob = new Blob(bufferedChunks, { type: "application/octet-stream" });
+                var a = document.createElement("a");
+                a.href = URL.createObjectURL(backupBlob);
+                a.download = downloadName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+            setBackupProgress(100);
+            setBackupStatus(t("backup.status.done") + " " + downloadName);
+        } catch (error) {
+            setBackupStatus(t("backup.error.exception") + " " + (error && error.message ? error.message : String(error)));
+        }
+    }
+
     // Global functions for onclick handlers
     window.ubiRemoveVol = removeVolume;
     window.ubiRenameVol = renameVolume;
+    window.ubiBackupVol = backupVolume;
 
     // Initialize
     window.ubiInit = function () {

@@ -1192,6 +1192,7 @@ int start_web_failsafe(void)
 	httpd_register_uri_handler(inst, "/ubi/remove", &ubi_remove_vol_handler, NULL);
 	httpd_register_uri_handler(inst, "/ubi/rename", &ubi_rename_vol_handler, NULL);
 	httpd_register_uri_handler(inst, "/ubi/mtd_list", &ubi_mtd_list_handler, NULL);
+	httpd_register_uri_handler(inst, "/ubi/backup", &ubi_backup_handler, NULL);
 #endif
 #ifdef CONFIG_WEBUI_FAILSAFE_FACTORY
 	httpd_register_uri_handler(inst, "/factory.html", &html_handler, NULL);

@@ -705,3 +705,182 @@ void ubi_mtd_list_handler(enum httpd_uri_handler_status status,
 
 	ubi_reply_json(response, 200, buf, buf);
 }
+
+/**
+ * ubi_backup_handler - POST /ubi/backup
+ *
+ * Form parameters:
+ *   name - Volume name to backup/download
+ *
+ * Returns the volume content as a binary download.
+ */
+void ubi_backup_handler(enum httpd_uri_handler_status status,
+	struct httpd_request *request,
+	struct httpd_response *response)
+{
+	struct ubi_backup_session {
+		struct ubi_volume *vol;
+		struct ubi_device *ubi;
+		u64 total;
+		u64 cur;
+		void *buf;
+		size_t buf_size;
+		char hdr[512];
+		int hdr_len;
+	} *st;
+	struct httpd_form_value *name_val;
+	char *vol_name = NULL;
+	char filename[128];
+	int ret;
+
+	ubi_free_session(status, response);
+
+	if (status == HTTP_CB_RESPONDING) {
+		u64 remain;
+		size_t to_read;
+
+		st = response->session_data;
+		if (!st) {
+			response->status = HTTP_RESP_NONE;
+			return;
+		}
+
+		remain = st->total - st->cur;
+		if (!remain) {
+			response->status = HTTP_RESP_NONE;
+			return;
+		}
+
+		to_read = (size_t)min_t(u64, remain, st->buf_size);
+
+		ret = ubi_volume_read(st->vol->name, st->buf, st->cur, to_read);
+		if (ret) {
+			response->status = HTTP_RESP_NONE;
+			return;
+		}
+
+		st->cur += to_read;
+
+		response->status = HTTP_RESP_CUSTOM;
+		response->data = (const char *)st->buf;
+		response->size = to_read;
+		return;
+	}
+
+	if (status == HTTP_CB_CLOSED) {
+		st = response->session_data;
+		if (st) {
+			free(st->buf);
+			free(st);
+		}
+		return;
+	}
+
+	if (status != HTTP_CB_NEW)
+		return;
+
+	if (!request || request->method != HTTP_POST) {
+		ubi_reply_text(response, 405, "method");
+		return;
+	}
+
+	/* Get volume name */
+	name_val = httpd_request_find_value(request, "name");
+	if (!name_val || !name_val->data || !name_val->size) {
+		ubi_reply_text(response, 400, "missing name");
+		return;
+	}
+
+	if (name_val->size > UBI_VOL_NAME_MAX_LEN) {
+		ubi_reply_text(response, 400, "name too long");
+		return;
+	}
+
+	vol_name = malloc(name_val->size + 1);
+	if (!vol_name) {
+		ubi_reply_text(response, 500, "oom");
+		return;
+	}
+
+	memcpy(vol_name, name_val->data, name_val->size);
+	vol_name[name_val->size] = '\0';
+
+	/* Check if UBI is attached */
+	extern struct ubi_device *ubi_devices[];
+	struct ubi_device *ubi = ubi_devices[0];
+
+	if (!ubi) {
+		free(vol_name);
+		ubi_reply_text(response, 400, "no ubi device");
+		return;
+	}
+
+	/* Find volume */
+	struct ubi_volume *vol = ubi_find_volume(vol_name);
+	if (!vol) {
+		free(vol_name);
+		ubi_reply_text(response, 404, "volume not found");
+		return;
+	}
+
+	/* Allocate session */
+	st = calloc(1, sizeof(*st));
+	if (!st) {
+		free(vol_name);
+		ubi_reply_text(response, 500, "oom");
+		return;
+	}
+
+	st->buf_size = 64 * 1024;
+	st->buf = malloc(st->buf_size);
+	if (!st->buf) {
+		free(st);
+		free(vol_name);
+		ubi_reply_text(response, 500, "oom");
+		return;
+	}
+
+	st->vol = vol;
+	st->ubi = ubi;
+	st->total = (u64)vol->used_bytes;
+	st->cur = 0;
+
+	/* Generate filename */
+	{
+		char safe_name[64];
+		const char *p;
+		size_t i;
+
+		/* Sanitize volume name for filename */
+		p = vol_name;
+		for (i = 0; i < sizeof(safe_name) - 1 && *p; i++, p++) {
+			unsigned char c = *p;
+			if (isalnum(c) || c == '-' || c == '_')
+				safe_name[i] = c;
+			else
+				safe_name[i] = '_';
+		}
+		safe_name[i] = '\0';
+
+		snprintf(filename, sizeof(filename), "ubi_%s.bin", safe_name);
+	}
+
+	free(vol_name);
+
+	/* Build HTTP header */
+	st->hdr_len = snprintf(st->hdr, sizeof(st->hdr),
+		"HTTP/1.1 200 OK\r\n"
+		"Content-Type: application/octet-stream\r\n"
+		"Content-Length: %llu\r\n"
+		"Content-Disposition: attachment; filename=\"%s\"\r\n"
+		"Cache-Control: no-store\r\n"
+		"Connection: close\r\n"
+		"\r\n",
+		(unsigned long long)st->total,
+		filename);
+
+	response->session_data = st;
+	response->status = HTTP_RESP_CUSTOM;
+	response->data = st->hdr;
+	response->size = st->hdr_len;
+}

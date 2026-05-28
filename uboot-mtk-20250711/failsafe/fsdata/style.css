@@ -1379,7 +1379,8 @@ ul li {
     gap: 12px;
 }
 
-#backup_status {
+#backup_status,
+#ubi_backup_status {
     margin: 12px auto 0;
     text-align: center;
     color: var(--muted);

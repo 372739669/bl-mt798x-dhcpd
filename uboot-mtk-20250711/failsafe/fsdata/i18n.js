@@ -323,6 +323,7 @@ const I18N = {
         "ubi.btn.create": "Create Volume",
         "ubi.btn.rename": "Rename",
         "ubi.btn.remove": "Remove",
+        "ubi.btn.backup": "Backup",
         "ubi.status.no_device": "No UBI device attached",
         "ubi.info.mtd": "MTD:",
         "ubi.info.peb_size": "PEB size:",
@@ -363,7 +364,8 @@ const I18N = {
         "ubi.error.rename_failed": "Failed to rename volume.",
         "ubi.warn.detach": "Detaching will erase all volume metadata. Volumes will be inaccessible until re-attached.",
         "ubi.warn.remove": "Removing a volume permanently deletes its data.",
-        "ubi.warn.static": "Static volumes cannot be written to after creation."
+        "ubi.warn.static": "Static volumes cannot be written to after creation.",
+        "ubi.warn.backup": "Do not power off the device during backup."
     },
     "zh-cn": {
         "app.name": "恢复模式 WEBUI",
@@ -679,6 +681,7 @@ const I18N = {
         "ubi.btn.create": "创建卷",
         "ubi.btn.rename": "重命名",
         "ubi.btn.remove": "删除",
+        "ubi.btn.backup": "备份",
         "ubi.status.no_device": "未挂载 UBI 设备",
         "ubi.info.mtd": "MTD：",
         "ubi.info.peb_size": "PEB 大小：",
@@ -719,7 +722,8 @@ const I18N = {
         "ubi.error.rename_failed": "重命名卷失败。",
         "ubi.warn.detach": "卸载将擦除所有卷元数据。卷在重新挂载前将无法访问。",
         "ubi.warn.remove": "删除卷将永久删除其数据。",
-        "ubi.warn.static": "静态卷创建后无法写入。"
+        "ubi.warn.static": "静态卷创建后无法写入。",
+        "ubi.warn.backup": "备份过程中请勿断电。"
     },
     ru: {
         "app.name": "Режим восстановления WEBUI",

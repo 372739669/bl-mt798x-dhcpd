@@ -103,6 +103,9 @@ void ubi_rename_vol_handler(enum httpd_uri_handler_status status,
 void ubi_mtd_list_handler(enum httpd_uri_handler_status status,
 	struct httpd_request *request,
 	struct httpd_response *response);
+void ubi_backup_handler(enum httpd_uri_handler_status status,
+	struct httpd_request *request,
+	struct httpd_response *response);
 #endif
 
 #endif /* _FAILSAFE_INTERNAL_H_ */
