@@ -1127,9 +1127,8 @@ int start_web_failsafe(void)
 	httpd_register_uri_handler(inst, "/fail.html", &html_handler, NULL);
 	httpd_register_uri_handler(inst, "/flashing.html", &html_handler, NULL);
 	httpd_register_uri_handler(inst, "/getmtdlayout", &mtd_layout_handler, NULL);
-#ifdef CONFIG_MTK_BOOTMENU_MMC
-	if (failsafe_mmc_present())
-		httpd_register_uri_handler(inst, "/gpt.html", &html_handler, NULL);
+#ifdef CONFIG_WEBUI_FAILSAFE_GPT
+	httpd_register_uri_handler(inst, "/gpt.html", &html_handler, NULL);
 #endif
 	httpd_register_uri_handler(inst, "/initramfs.html", &html_handler, NULL);
 	httpd_register_uri_handler(inst, "/main.js", &js_handler, NULL);
