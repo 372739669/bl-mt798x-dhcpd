@@ -40,6 +40,8 @@ CLEAN=1 VERSION=2025 ./build.sh
 - `FIXED_MTDPARTS=0|1`
 - `FSTHEME=bootstrap|gl|mtk`
 - `SIMG=0|1`
+- `UBIMNG=0|1` (enable UBI volume management in failsafe Web UI)
+- `TELNETD=0|1` (enable RFC 854 compliant telnet server)
 - `SILENT=Y|N`
 - `COPY_BL2=0|1`
 
