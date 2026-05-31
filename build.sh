@@ -21,6 +21,11 @@ simg=${SIMG:-0}
 UBIMNG=${UBIMNG:-0}
 TELNETD=${TELNETD:-0}
 COPY_BL2=${COPY_BL2:-1}
+clean_mode=0
+
+if [ "${1:-}" = "--clean" ] || [ "${1:-}" = "-c" ]; then
+	clean_mode=1
+fi
 
 if [ "$VERSION" = "2025" ]; then
     UBOOT_DIR=$UBOOT25
@@ -38,23 +43,18 @@ else
     exit 1
 fi
 
-if [ "$CLEAN" = "1" ]; then
-	if [ -f "$UBOOT_DIR/.config" ]; then
-		echo "Cleaning $UBOOT_DIR"
-		cd "$UBOOT_DIR"
-		make distclean
-		cd ..
-	else
-		echo "$UBOOT_DIR/.config does not exist."
-	fi
-    if [ -d "$ATF_DIR/build" ]; then
-		echo "Cleaning $ATF_DIR" 
-		cd "$ATF_DIR"
-		make distclean
-		cd ..
-    else
-        echo "$ATF_DIR/build does not exist."
-    fi
+if [ "$clean_mode" = "1" ]; then
+	for dir in "$UBOOT_DIR" "$ATF24" "$ATF25" "$ATF26"; do
+		if [ -d "$dir" ]; then
+			echo "Cleaning $dir"
+			(
+				cd "$dir" && make distclean
+			)
+		else
+			echo "$dir does not exist."
+		fi
+	done
+
 	echo "Clean done."
     exit 0
 fi

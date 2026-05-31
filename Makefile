@@ -461,8 +461,8 @@ gpt:
 
 clean:
 	@set -euo pipefail; \
-	printf '%s\n' "env -u MAKEFLAGS -u MAKELEVEL -u MFLAGS CLEAN=1 VERSION=\"$(VERSION)\" ./build.sh"; \
-	env -u MAKEFLAGS -u MAKELEVEL -u MFLAGS CLEAN=1 VERSION="$(VERSION)" ./build.sh
+	printf '%s\n' "env -u MAKEFLAGS -u MAKELEVEL -u MFLAGS ./build.sh --clean"; \
+	env -u MAKEFLAGS -u MAKELEVEL -u MFLAGS ./build.sh --clean
 
 distclean: clean
 	@set -euo pipefail; \
