@@ -14,10 +14,6 @@ config BUILD_GPT
 	bool "Build GPT via generate_gpt.sh"
 	default n
 
-endmenu
-
-menu "FIP build settings"
-
 choice
 	prompt "Build version"
 	default VERSION_2025
@@ -31,6 +27,10 @@ config VERSION_SP1
 config VERSION_SP2
 	bool "SP2"
 endchoice
+
+endmenu
+
+menu "FIP build settings"
 
 source "boards.kconfig"
 
