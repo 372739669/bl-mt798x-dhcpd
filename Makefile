@@ -34,6 +34,8 @@ endif
 ifeq ($(origin VARIANT), undefined)
   ifeq ($(strip $(CONFIG_VARIANT_UBOOTMOD)),y)
     VARIANT := ubootmod
+  else ifeq ($(strip $(CONFIG_VARIANT_UBI)),y)
+    VARIANT := ubi
   else ifeq ($(strip $(CONFIG_VARIANT_NONMBM)),y)
     VARIANT := nonmbm
   else ifeq ($(strip $(CONFIG_VARIANT_OPENWRT)),y)
@@ -516,7 +518,7 @@ help:
 		'' \
 		'Common variables:' \
 		'  VERSION=2025|SP1|SP2' \
-		'  VARIANT=default|ubootmod|nonmbm|openwrt' \
+		'  VARIANT=default|ubootmod|ubi|nonmbm|openwrt' \
 		'  FSTHEME=bootstrap|gl|mtk' \
 		'  BUILD_FIP=Y|N' \
 		'  BUILD_ATF=Y|N' \
