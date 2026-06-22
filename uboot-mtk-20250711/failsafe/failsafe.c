@@ -437,7 +437,11 @@ static int sysinfo_json_append_mmc(char *buf, int len, int left)
 		present = mmc && bd && bd->type != DEV_TYPE_UNKNOWN;
 
 		if (present) {
-			json_escape(esc_vendor, sizeof(esc_vendor), bd->vendor ? bd->vendor : "");
+			char pretty_vendor[256];
+
+			failsafe_mmc_vendor_pretty(bd->vendor ? bd->vendor : "",
+						   pretty_vendor, sizeof(pretty_vendor));
+			json_escape(esc_vendor, sizeof(esc_vendor), pretty_vendor);
 			json_escape(esc_product, sizeof(esc_product), bd->product ? bd->product : "");
 			len += snprintf(buf + len, left - len,
 				"\"present\":true,\"vendor\":\"%s\",\"product\":\"%s\",\"blksz\":%lu,\"size\":%llu,",

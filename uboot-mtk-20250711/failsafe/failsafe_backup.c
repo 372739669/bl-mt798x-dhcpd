@@ -203,9 +203,13 @@ void backupinfo_handler(enum httpd_uri_handler_status status,
 		present = mmc && bd && bd->type != DEV_TYPE_UNKNOWN;
 
 		if (present) {
+			char pretty_vendor[256];
+
+			failsafe_mmc_vendor_pretty(bd->vendor ? bd->vendor : "",
+						   pretty_vendor, sizeof(pretty_vendor));
 			len += snprintf(buf + len, left - len,
 				"\"present\":true,\"vendor\":\"%s\",\"product\":\"%s\",\"blksz\":%lu,\"size\":%llu,",
-				bd->vendor, bd->product, (unsigned long)bd->blksz,
+				pretty_vendor, bd->product, (unsigned long)bd->blksz,
 				(unsigned long long)mmc->capacity_user);
 		} else {
 			len += snprintf(buf + len, left - len, "\"present\":false,");

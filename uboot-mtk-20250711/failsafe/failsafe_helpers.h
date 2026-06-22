@@ -177,4 +177,21 @@ int flash_parse_storage_target(struct httpd_request *request,
 			       char *storage_sel, size_t storage_sz,
 			       char *target_name, size_t target_sz);
 
+/* ------------------------------------------------------------------ */
+/*  MMC vendor helper                                                  */
+/* ------------------------------------------------------------------ */
+
+/**
+ * failsafe_mmc_vendor_pretty - convert MMC vendor string to human-readable
+ * @vendor: raw vendor string in format "Man XXXXXX Snr YYYYYYYY"
+ * @dst: output buffer
+ * @dst_sz: output buffer size
+ *
+ * Extracts the manufacturer ID from the vendor string and appends the
+ * manufacturer name in parentheses, e.g. "Man 000015(Samsung) Snr 01234567".
+ * If the MID is not in the lookup table, the original string is returned
+ * unchanged.
+ */
+void failsafe_mmc_vendor_pretty(const char *vendor, char *dst, size_t dst_sz);
+
 #endif /* _FAILSAFE_HELPERS_H_ */

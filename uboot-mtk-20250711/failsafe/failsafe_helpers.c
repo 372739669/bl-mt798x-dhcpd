@@ -306,6 +306,116 @@ void flash_close_target(struct flash_target *t)
 #endif
 }
 
+/* ------------------------------------------------------------------ */
+/*  MMC manufacturer ID lookup                                         */
+/* ------------------------------------------------------------------ */
+
+struct mmc_mid_entry {
+	unsigned int mid;
+	const char *name;
+};
+
+static const struct mmc_mid_entry mmc_mid_table[] = {
+	{ 0x00, "Spansion" },
+	{ 0x01, "Samsung" },
+	{ 0x02, "SanDisk" },
+	{ 0x03, "Toshiba" },
+	{ 0x11, "Toshiba" },
+	{ 0x13, "Micron" },
+	{ 0x15, "Samsung" },
+	{ 0x18, "Swissbit" },
+	{ 0x2c, "HIKSEM" },
+	{ 0x30, "SMART Modular" },
+	{ 0x32, "Qimonda" },
+	{ 0x44, "Transcend" },
+	{ 0x45, "SanDisk" },
+	{ 0x70, "Kingston" },
+	{ 0x90, "SK hynix" },
+	{ 0x9c, "ATP Electronics" },
+	{ 0xce, "Samsung" },
+	{ 0xfe, "Foresee" },
+};
+
+static const char *mmc_mid_lookup(unsigned int mid)
+{
+	size_t i;
+
+	for (i = 0; i < ARRAY_SIZE(mmc_mid_table); i++) {
+		if (mmc_mid_table[i].mid == mid)
+			return mmc_mid_table[i].name;
+	}
+
+	return NULL;
+}
+
+/**
+ * failsafe_mmc_vendor_pretty() - append manufacturer name to MMC vendor string
+ *
+ * Input format:  "Man 00002c Snr 02e9a8c9"
+ * Output format: "Man 00002c(HIKSEM) Snr 02e9a8c9"
+ *
+ * If the MID is unknown, the raw vendor string is copied unchanged.
+ */
+void failsafe_mmc_vendor_pretty(const char *vendor, char *dst, size_t dst_sz)
+{
+	const char *p, *snr;
+	unsigned int mid;
+	const char *name;
+
+	if (!vendor || !vendor[0] || !dst || !dst_sz)
+		return;
+
+	dst[0] = '\0';
+
+	/* Only transform strings starting with "Man " */
+	if (strncmp(vendor, "Man ", 4))
+		goto copy_raw;
+
+	/* Parse 6-char hex MID: "Man XXXXXX" */
+	p = vendor + 4;
+	if (strlen(p) < 6)
+		goto copy_raw;
+
+	/* sscanf with %6x for safety */
+	{
+		char hex[7];
+		memcpy(hex, p, 6);
+		hex[6] = '\0';
+
+		/* Validate hex */
+		{
+			int j;
+			for (j = 0; j < 6; j++) {
+				if (!isxdigit((unsigned char)hex[j]))
+					goto copy_raw;
+			}
+		}
+
+		mid = simple_strtoul(hex, NULL, 16);
+	}
+
+	/* Find " Snr" after the MID */
+	snr = strstr(p + 6, " Snr");
+	if (!snr)
+		goto copy_raw;
+
+	/* Lookup manufacturer name */
+	name = mmc_mid_lookup(mid);
+
+	/* Build output: "Man %06x(NAME) Snr ..." or raw copy */
+	if (name) {
+		snprintf(dst, dst_sz, "Man %06x(%s)%s",
+			 mid, name, snr);
+	} else {
+		goto copy_raw;
+	}
+
+	return;
+
+copy_raw:
+	strlcpy(dst, vendor ? vendor : "", dst_sz);
+}
+
 int flash_parse_storage_target(struct httpd_request *request,
 			       char *storage_sel, size_t storage_sz,
 			       char *target_name, size_t target_sz)
