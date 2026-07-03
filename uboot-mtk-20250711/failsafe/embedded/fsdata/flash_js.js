@@ -693,7 +693,7 @@ async function flashRead() {
         flashCurrentPage = 0;
 
         /* optional: warn for large reads */
-        if (totalSize > 1024 * 1024 && !confirm(totalChunks + " chunk" + (totalChunks > 1 ? "s" : "") + " (" + bytesToHuman(totalSize) + ") may be slow. Continue?"))
+        if (totalSize > 1024 * 1024 && !confirm(t("flash.confirm.chunk").replace("$1", totalChunks).replace("$2", bytesToHuman(totalSize))))
             return;
 
         for (var c = 0; c < totalChunks; c++) {
