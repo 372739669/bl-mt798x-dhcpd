@@ -1467,10 +1467,9 @@ ul li {
     min-height: 220px;
 }
 
-.hex-input {
+.hex-grid {
     width: 100%;
     min-height: 220px;
-    resize: vertical;
     padding: 10px 12px;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border);
@@ -1480,11 +1479,53 @@ ul li {
     font-family: var(--font-mono);
     font-size: 0.75rem;
     line-height: 1.55;
+    overflow: auto;
+    cursor: default;
 }
 
-.hex-input:focus {
+.hex-grid:focus-within {
     border-color: rgba(var(--primary-rgb), 0.55);
     box-shadow: var(--focus-ring);
+}
+
+.hex-row {
+    display: flex;
+}
+
+.hex-byte {
+    display: inline-block;
+    width: 2.2ch;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.08s;
+}
+
+.hex-byte:hover {
+    background: rgba(var(--primary-rgb), 0.15);
+}
+
+.hex-byte.selected {
+    background: rgba(var(--primary-rgb), 0.4);
+    color: #fff;
+    outline: 1px solid rgba(var(--primary-rgb), 0.7);
+}
+
+.hex-byte.modified {
+    background: rgba(76, 175, 80, 0.35);
+    color: #fff;
+}
+
+.hex-byte.selected.modified {
+    background: #FF9800;
+}
+
+.hex-overlay-input {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
 }
 
 .hex-tools {
@@ -2117,7 +2158,7 @@ body[data-page="settings"] .upload-hero {
 
     .hex-offset,
     .hex-ascii,
-    .hex-input {
+    .hex-grid {
         min-height: 140px;
     }
 

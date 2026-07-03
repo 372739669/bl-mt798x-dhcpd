@@ -80,19 +80,20 @@
 					</div>
 
 					<div class="field">
-						<label for="flash_data" data-i18n="flash.label.data">Hex data:</label>
+						<label for="flash_hex_grid" data-i18n="flash.label.data">Hex data:</label>
 						<div class="hex-editor">
 							<div class="hex-header">
 								<div class="hex-offset-title" data-i18n="flash.label.offset">Offset</div>
 								<div class="hex-x-title">00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F</div>
 								<div class="hex-ascii-title" data-i18n="flash.label.ascii">ASCII</div>
 							</div>
-							<div class="hex-body">
-								<pre id="flash_offset" class="hex-offset"></pre>
-								<textarea id="flash_data" class="hex-input" rows="10"
-									placeholder="00 11 22 33"></textarea>
-								<pre id="flash_ascii" class="hex-ascii"></pre>
-							</div>
+						<div class="hex-body">
+							<pre id="flash_offset" class="hex-offset"></pre>
+							<div id="flash_hex_grid" class="hex-grid" tabindex="0"></div>
+							<input id="flash_hex_input" type="text" class="hex-overlay-input"
+								maxlength="2" autocomplete="off" aria-hidden="true">
+							<pre id="flash_ascii" class="hex-ascii"></pre>
+						</div>
 						</div>
 					</div>
 
