@@ -239,6 +239,13 @@ int start_web_failsafe(void)
 			 * inner net_loop() (e.g. tftp/ping executed from
 			 * the telnet console).
 			 *
+			 * net_loop() calls eth_halt() on exit, which
+			 * breaks all existing TCP connections (packets
+			 * are lost, peer state becomes stale).  We must
+			 * reset all connections so that new SYNs from
+			 * clients are not blocked by stale conn_head
+			 * entries in FIN_WAIT_1/ESTABLISHED/etc.
+			 *
 			 * net_loop() also calls net_clear_handlers() on
 			 * exit, which removes the DHCP UDP handler.  We
 			 * must re-register it after bringing ethernet back
@@ -248,6 +255,15 @@ int start_web_failsafe(void)
 			if (eth_needs_reinit) {
 				eth_needs_reinit = false;
 				eth_init();
+				/*
+				 * net_loop() called eth_halt() on exit.
+				 * All existing TCP connections are now
+				 * stale (peer state unsynchronized).
+				 * Reset them so new client SYNs are not
+				 * blocked by old conn_head entries.
+				 */
+				mtk_tcp_reset_all_conn();
+				mtk_tcp_start();
 #ifdef CONFIG_MTK_DHCPD
 				/* Re-register DHCP handler cleared by net_loop() */
 				if (mtk_dhcpd_is_running())
