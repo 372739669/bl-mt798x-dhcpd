@@ -27,11 +27,13 @@
 #include <vsprintf.h>
 #include <asm/global_data.h>
 
-#ifdef CONFIG_MTK_DHCPD
-#include <net/mtk_dhcpd.h>
-#endif
-
 DECLARE_GLOBAL_DATA_PTR;
+
+/* Set by telnetd when a network command (tftp, ping, ...) finishes.
+ * The failsafe poll loop uses this to call eth_init() from outside the
+ * TCP callback chain, avoiding nested eth_rx() DMA-descriptor corruption.
+ */
+extern void failsafe_notify_network_cmd_done(void);
 
 /**
  * is_network_command() - check if a command will call net_loop()
@@ -537,18 +539,21 @@ static void telnetd_execute(struct mtk_tcp_cb_data *cbd,
 
 	/*
 	 * If a network command was executed, net_loop() inside it called
-	 * eth_halt() on completion.  We must reinitialize the ethernet
-	 * device RIGHT NOW so that mtk_tcp_send_data() can deliver the
-	 * captured output to the telnet client.  We also re-register the
-	 * DHCP handler that net_clear_handlers() removed.
+	 * eth_halt() on completion.
+	 *
+	 * We MUST NOT call eth_init() here because we are deep inside the
+	 * OUTER eth_rx() → TCP callback chain.  Calling eth_init() inline
+	 * reinitializes the DMA receive ring while the OUTER eth_rx() is
+	 * still iterating descriptors, corrupting the receive path and
+	 * making all TCP services (telnet, HTTP) unreachable.
+	 *
+	 * Instead we set the eth_needs_reinit flag.  The failsafe poll loop
+	 * will call eth_init() from OUTSIDE the callback chain on the next
+	 * iteration.  The command's output is queued and automatically sent
+	 * once TCP is running again.
 	 */
-	if (was_network_cmd) {
-		eth_init();
-#ifdef CONFIG_MTK_DHCPD
-		if (mtk_dhcpd_is_running())
-			mtk_dhcpd_start();
-#endif
-	}
+	if (was_network_cmd)
+		failsafe_notify_network_cmd_done();
 
 	/* Print a fresh prompt after the command's output */
 	if (prompt[0] != '\n')
