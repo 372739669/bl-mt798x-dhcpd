@@ -27,6 +27,16 @@ int failsafe_validate_image(const void *data, size_t size,
 int failsafe_write_image(const void *data, size_t size,
 			 failsafe_fw_t fw);
 
+/**
+ * failsafe_notify_network_cmd_done() - signal that a network command finished
+ *
+ * Called from telnetd after executing a network command (tftp, ping, etc.)
+ * that goes through net_loop().  The inner net_loop() calls eth_halt() on
+ * completion and leaves existing TCP connections stale.  The main poll loop
+ * uses this flag to reset connections and reinitialize ethernet.
+ */
+void failsafe_notify_network_cmd_done(void);
+
 /* ------------------------------------------------------------------ */
 /*  Handler declarations (used by failsafe.c for URI registration)     */
 /* ------------------------------------------------------------------ */
