@@ -9,6 +9,7 @@ spinand-$(CONFIG_MTD_SPI_NAND_CHUCUN)				+= chucun.o
 spinand-$(CONFIG_MTD_SPI_NAND_DOSILICON)			+= dosilicon.o
 spinand-$(CONFIG_MTD_SPI_NAND_ESMT)					+= esmt.o
 spinand-$(CONFIG_MTD_SPI_NAND_ETRON)				+= etron.o
+spinand-$(CONFIG_MTD_SPI_NAND_FISON)				+= fison.o
 spinand-$(CONFIG_MTD_SPI_NAND_FMSH)					+= fmsh.o
 spinand-$(CONFIG_MTD_SPI_NAND_FORESEE)				+= foresee.o
 spinand-$(CONFIG_MTD_SPI_NAND_GIGADEVICE)			+= gigadevice.o

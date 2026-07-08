@@ -908,6 +908,9 @@ static const struct spinand_manufacturer *spinand_manufacturers[] = {
 #ifdef CONFIG_MTD_SPI_NAND_ETRON
 	&etron_spinand_manufacturer,
 #endif
+#ifdef CONFIG_MTD_SPI_NAND_FISON
+	&fison_spinand_manufacturer,
+#endif
 #ifdef CONFIG_MTD_SPI_NAND_FMSH
 	&fmsh_spinand_manufacturer,
 #endif
