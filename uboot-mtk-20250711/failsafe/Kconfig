@@ -6,6 +6,7 @@ config WEBUI_FAILSAFE
 	bool "Enable Failsafe Web UI"
 	select MTK_TCP
 	select MTK_HTTPD
+	select MTK_DHCPD
 	default n
 	help
 	  Enable Web based failsafe UI
