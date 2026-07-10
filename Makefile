@@ -602,7 +602,7 @@ clean:
 distclean: clean
 	@set -euo pipefail; \
 	echo "Cleaning output directories..."; \
-	rm -rf output output_gpt output_bl2; \
+	rm -rf output output_gpt output_bl2 output_mtmips; \
 	echo "Cleaning config files..."; \
 	rm -f .config .config.old boards.kconfig; \
 	echo "Cleaning generated files..."; \

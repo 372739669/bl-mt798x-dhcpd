@@ -402,6 +402,21 @@ Current branch only supports **2025/SP1/SP2**.
 
 ---
 
+## MTMIPS
+
+**It only for development and testing, not recommended for production use.**
+
+```bash
+chmod +x mtmips.sh
+SOC=<mt7620|mt7621|mt7628|mt7688> BOARD=<board_name> ./mtmips.sh
+```
+
+but it not preferred, because the mt7621 u-boot has some issues on uboot-mtk-20250711.
+
+It may cause some issues if you don't know what you are doing, so it's recommended to use the [uboot-mt7621-dhcpd](https://github.com/Yuzhii0718/uboot-mt7621-dhcpd) project for mt7621 devices, which is more stable and has better support for mt7621 devices.
+
+---
+
 ## Acknowledgement
 
 - [u-boot](https://github.com/u-boot/u-boot)
