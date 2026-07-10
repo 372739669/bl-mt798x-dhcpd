@@ -80,6 +80,7 @@ struct backup_session {
 };
 
 #ifdef CONFIG_MTD
+#if IS_ENABLED(CONFIG_MTD_SPI_NAND)
 static const struct spinand_info *failsafe_spinand_match_info(struct spinand_device *spinand)
 {
 	size_t i;
@@ -111,6 +112,7 @@ static const struct spinand_info *failsafe_spinand_match_info(struct spinand_dev
 
 	return NULL;
 }
+#endif /* CONFIG_MTD_SPI_NAND */
 
 static const char *failsafe_get_mtd_chip_model(struct mtd_info *mtd, char *out, size_t out_sz)
 {
