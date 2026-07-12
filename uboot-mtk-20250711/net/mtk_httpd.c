@@ -11,20 +11,11 @@
 #include <errno.h>
 #include <malloc.h>
 #include <net.h>
-
-#ifdef CONFIG_MTK_NET_MIPS_SP_COMPAT
-#undef sp
-#endif
-
 #include <net/mtk_tcp.h>
 #include <net/mtk_httpd.h>
 #include <vsprintf.h>
 #include <log.h>
 #include <asm/global_data.h>
-
-#ifdef CONFIG_MTK_NET_MIPS_SP_COMPAT
-#undef sp
-#endif
 
 DECLARE_GLOBAL_DATA_PTR;
 
