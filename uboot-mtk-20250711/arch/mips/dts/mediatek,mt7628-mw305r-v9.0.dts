@@ -25,6 +25,11 @@
 		stdout-path = &uart0;
 	};
 
+	config {
+		blink_led = "green:wan";
+		system_led = "green:sys";
+	};
+
 	leds {
 		compatible = "gpio-leds";
 
@@ -53,7 +58,7 @@
 		};
 
 		led_internet: internet {
-			label = "green:internet";
+			label = "green:wan";
 			gpios = <&gpio1 2 GPIO_ACTIVE_LOW>;
 			default-state = "off";
 		};
