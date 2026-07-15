@@ -57,6 +57,11 @@ on:
           - single_layout
           - multi_layout
           - dis_fixed_mtdparts
+      COPY_BL2:
+        description: 'Copy BL2 image to output'
+        required: false
+        default: 'true'
+        type: boolean
       SIMG:
         description: 'Enable SIMG packaging'
         required: false
@@ -108,6 +113,7 @@ env:
   CONFIG_VARIANT: ${{ github.event.inputs.VARIANT || 'default' }}
   CONFIG_FSTHEME: ${{ github.event.inputs.FSTHEME || 'bootstrap' }}
   CONFIG_EXTRA_OPTION: ${{ github.event.inputs.EXTRA_OPTION || 'multi_layout' }}
+  CONFIG_COPY_BL2: ${{ github.event.inputs.COPY_BL2 || 'true' }}
   CONFIG_SIMG: ${{ github.event.inputs.SIMG || 'false' }}
   CONFIG_BUILD_LOG: ${{ github.event.inputs.BUILD_LOG || 'true' }}
 
@@ -333,6 +339,7 @@ jobs:
         config_apply "CONFIG_BUILD_FIP" "y"
         config_apply "CONFIG_BUILD_ATF" "n"
         config_apply "CONFIG_BUILD_GPT" "n"
+        config_apply "CONFIG_COPY_BL2" "$([ "$CONFIG_COPY_BL2" = "true" ] && echo y || echo n)"
 
         # Version selection (from FIP_VERSION_INPUT)
         FIP_INPUT="$FIP_VERSION_INPUT"
@@ -744,6 +751,11 @@ jobs:
         fi
         if [ "$CONFIG_BUILD_LOG" = "true" ]; then
           echo "- Build log enabled" >> release.txt
+        fi
+        if [ "$CONFIG_COPY_BL2" = "true" ]; then
+          echo "- Copy BL2 image enabled" >> release.txt
+        else
+          echo "- Copy BL2 image disabled" >> release.txt
         fi
 
         case "$CONFIG_MODEL" in
