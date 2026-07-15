@@ -138,7 +138,7 @@ config TELNETD
 
 config NAND_RAW
 	bool "Enable NAND raw/OOB backup and flash (DANGEROUS)"
-	default y
+	default n
 	help
 	  Enable NAND raw mode in backup and flash editor that reads/writes
 	  pages including OOB (Out-Of-Band) spare area data via MTD_OPS_RAW.
