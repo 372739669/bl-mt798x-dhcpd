@@ -215,8 +215,9 @@ void webconsole_poll_handler(enum httpd_uri_handler_status status,
 		return;
 	}
 
-	snprintf(json, json_sz, "{\"data\":\"%s\",\"avail\":%d}\n", esc,
-		membuf_avail(&gd->console_out));
+	snprintf(json, json_sz, "{\"data\":\"%s\",\"avail\":%d,\"overflow\":%s}\n", esc,
+		membuf_avail(&gd->console_out),
+		(gd->flags & GD_FLG_RECORD_OVF) ? "true" : "false");
 	free(esc);
 
 	response->data = json;

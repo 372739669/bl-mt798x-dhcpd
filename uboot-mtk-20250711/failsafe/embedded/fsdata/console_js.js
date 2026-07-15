@@ -93,6 +93,9 @@ function consoleInit() {
                 return;
             }
             payload && payload.data && appendText(payload.data);
+            if (payload && payload.overflow) {
+                setStatus(String.fromCodePoint(0x26A0) + " " + t("console.status.overflow"));
+            }
         } catch (error) {
             setStatus(t("console.status.error") + " " + (error && error.message ? error.message : String(error)));
         }
